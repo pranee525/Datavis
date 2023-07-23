@@ -1,0 +1,68 @@
+mat-grid-tile {
+    background: lightblue;
+    overflow: auto;
+    margin-left: 3%;
+  }
+
+.mainDiv{
+    width: 49%;
+    background-color: lightblue;
+    height: 300px;
+    float: left;
+    position: relative;
+    margin-left: 10px;
+    
+    overflow-y: scroll;
+    
+
+}
+
+.topDiv{
+    width: 20%;
+    background-color: lightblue;
+    /* display: block; */
+    float: left;
+    margin-left: 10px;
+    position: relative;
+    height: 200px;
+    overflow-y: scroll;
+}
+
+.lineSpan{
+    width: 96%;
+    display: block;
+    padding-left: 3%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    padding-right: 1%;
+}
+
+.lineSpan:hover {
+    background-color: grey;
+  }
+
+
+.spanBreak{
+    display:inline-block;
+    width:70%;
+    word-wrap:break-word;
+}
+
+.mat-form-field + .mat-form-field {
+    margin-left: 8px;
+  }
+
+
+.moreButton{
+    float: right;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 0px;
+    padding-bottom: 2px;
+    background-color: gainsboro;
+    border-radius: 9px;
+    font-size: 9px;
+    font-weight: bold;
+    cursor: pointer;
+    
+}

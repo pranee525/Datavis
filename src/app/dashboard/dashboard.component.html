@@ -1,0 +1,340 @@
+<div class="spinner-container" *ngIf="loadingSpinner">
+  <mat-spinner diameter="50"></mat-spinner>
+</div>
+
+<mat-grid-list cols="4" rowHeight="900px" width="100%">
+  <mat-grid-tile [colspan]="4">
+
+
+    <mat-tab-group color="primary"  #tabs style="width: 100%;">
+      <mat-tab label="Top Down" style="height: 850px;width: 100%;overflow: auto;"> 
+        
+        
+        <div class="example-large-box mat-elevation-z4" style="width: 90%;height:820px">
+      
+        <div class="titleHeader">
+          Available Files
+
+        </div>
+    <div style="width:100%">
+    
+    <div style="width: 35%;float: left;height: 783px;border-radius: 5px;overflow-y: scroll;">
+        <div style="width:100%;text-align: center;">
+          <b>Parts</b>
+        </div>
+      <mat-card style="word-wrap: break-word;width: 90%;margin-bottom: 5px;margin-top:5px;margin-left:5px;background-color: cornflowerblue;color: white;" *ngFor="let chip of availableOptions" (click)="showChaptersForSelection(chip.filename)" [class.active]="chip.filename === activeFileName" >
+        {{chip.filename}}
+      </mat-card>
+
+
+
+
+    
+    </div>
+
+    
+    <div style="width: 60%;float: right;">
+      <div style="width: 100%;float:left">
+        Chapters from Book : {{bookName}}
+
+      </div>
+    
+      <div style="width: 100%;margin-top: 7%;">
+      
+      <mat-chip-list aria-label="Color selection">
+        <mat-chip *ngFor="let chapter of chapterNames" class="mat-chip-design" (click)="showSelectedFile(bookName,chapter.chaptername)" selected color="primary">
+          {{chapter.chaptername}}
+        </mat-chip>
+      </mat-chip-list>
+    </div>
+    </div>
+     
+     
+    
+    
+    </div>
+
+      </div> 
+    </mat-tab>
+      <mat-tab label="Middle Out"  style="height: 850px;width: 100%;overflow: auto;">
+          
+      <div class="example-large-box mat-elevation-z4" style="width: 90%;height:820px">
+        <form class="example-form">
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Enter Search term</mat-label>
+            <input matInput placeholder="Crime" [(ngModel)]="activeSearchTerm" name="searchTerm">
+          </mat-form-field>
+          
+            <button mat-raised-button color="primary" style="margin-left: 10%;" (click)="buildTreeforWord(activeSearchTerm)">Search</button>
+
+              
+              <section style="float: left;" class="example-section">
+                
+      <label class="example-margin">Search In:</label>
+                <mat-checkbox class="example-margin" [(ngModel)]="searchInToc" [ngModelOptions]="{standalone: true}">TOC</mat-checkbox>
+                <mat-checkbox class="example-margin" [(ngModel)]="searchInContext" [ngModelOptions]="{standalone: true}">Context</mat-checkbox>
+
+                
+              </section>
+              
+        </form>
+
+    <div style="width:100%">
+    
+    
+
+    
+    <div style="width: 100%;float: right;">
+      <div style="width: 100%;float:left">
+        Results for Search : {{activeSearchTerm}}
+
+      </div>
+    <div style="width: 100%;float:left">
+      <div style="width:35%;float: right;">
+        <mat-paginator [length]="dataForSearchResult.length"
+        [pageSize]="10"
+        [pageSizeOptions]="[5, 10, 25, 100]"
+        aria-label="Select page" (page)="pageEvent = $event; onPageChange($event)">
+  </mat-paginator>
+  </div>
+        <div style="width:6%;float: right;">
+          <mat-form-field style="margin-left: 1%;">
+
+            <mat-label>Filter Chapters</mat-label>
+            <mat-select (selectionChange)="onSelection($event, chapterFilter.selectedOptions)">
+              <mat-option *ngFor="let topping of chapterFilter" [value]="topping">{{topping}}</mat-option>
+            </mat-select>
+            </mat-form-field>
+    </div>
+      
+    </div>
+      <div style="width: 100%;margin-top: 3%; overflow-y: auto;height: 600px;">
+      
+        <div *ngFor="let res of searchResult" style="width: 97%;margin-bottom: 5px;">
+
+
+        <mat-card style="width: 100%;">
+          <!-- <mat-card-subtitle>{{res.rfc}}</mat-card-subtitle> -->
+          <div style="background-color: #E4ECFC;border-radius: 7px;padding: 1%;cursor: pointer;">
+            <a (click)="gotoRefTab(res.reference)"><mat-card-title>{{res.reference}}</mat-card-title>
+          <mat-card-content>
+            
+            <p>{{ res.context }}</p>
+
+          </mat-card-content></a>
+        </div>
+         
+          
+          <mat-divider style="margin-top: 4px;"></mat-divider>
+          <mat-card-actions style="margin-top: 5px;">
+
+            <mat-chip-list #chipList class="matchiptwo">
+              <mat-chip matTooltip="{{res.filename}}" selected style="background-color:cornflowerblue" (click)="setTermStorage(res.filename,'','','')"> {{(res.filename.length>14)? (res.filename | slice:0:12)+'..':(res.filename)}}</mat-chip>
+              <mat-chip  [matMenuTriggerFor]="chapter" selected color="primary" matTooltip="{{res.chaptername}}"  >{{(res.chaptername.length>14)? (res.chaptername | slice:0:12)+'..':(res.chaptername)}}</mat-chip>
+              <mat-menu #chapter="matMenu">
+                <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,'','')">Go To Chapter</button>
+              </mat-menu>
+              <mat-chip [matMenuTriggerFor]="MatToc1" [style.background-color]="colorPallet[0]" matTooltip="{{res.toc1}}" *ngIf="res.toc1!='Toc 1'">{{(res.toc1.length>14)? (res.toc1 | slice:0:12)+'..':(res.toc1)}}</mat-chip>
+              <mat-menu #MatToc1="matMenu">
+                <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,'','')">Go To Chapter</button>
+                <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc1,'')">Go To Term</button>
+                <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc1,'1')">Go To Toc</button>
+              </mat-menu>
+            <mat-chip [matMenuTriggerFor]="MatToc2" [style.background-color]="colorPallet[1]" matTooltip="{{res.toc2}}" *ngIf="res.toc2!='Toc 2'">{{(res.toc2.length>14)? (res.toc2 | slice:0:12)+'..':(res.toc2)}}</mat-chip>
+            <mat-menu #MatToc2="matMenu">
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,'','')">Go To Chapter</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc2,'')">Go To Term</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc2,'2')">Go To Toc</button>
+            </mat-menu>
+            <mat-chip [matMenuTriggerFor]="MatToc3" [style.background-color]="colorPallet[2]" matTooltip="{{res.toc3}}" *ngIf="res.toc3!='Toc 3'">{{(res.toc3.length>14)? (res.toc3 | slice:0:12)+'..':(res.toc3)}}</mat-chip>
+            <mat-menu #MatToc3="matMenu">
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,'','')">Go To Chapter</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc3,'')">Go To Term</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc3,'3')">Go To Toc</button>
+            </mat-menu>
+            <mat-chip [matMenuTriggerFor]="MatToc4" [style.background-color]="colorPallet[3]" matTooltip="{{res.toc4}}" *ngIf="res.toc4!='Toc 4'">{{(res.toc4.length>14)? (res.toc4 | slice:0:12)+'..':(res.toc4)}}</mat-chip>
+            <mat-menu #MatToc4="matMenu">
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,'','')">Go To Chapter</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc4,'')">Go To Term</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc4,'4')">Go To Toc</button>
+            </mat-menu>
+            <mat-chip [matMenuTriggerFor]="MatToc5" [style.background-color]="colorPallet[4]" matTooltip="{{res.toc5}}" *ngIf="res.toc5!='Toc 5'">{{(res.toc5.length>14)? (res.toc5 | slice:0:12)+'..':(res.toc5)}}</mat-chip>
+            <mat-menu #MatToc5="matMenu">
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,'','')">Go To Chapter</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc5,'')">Go To Term</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc5,'5')">Go To Toc</button>
+            </mat-menu>
+            <mat-chip [matMenuTriggerFor]="MatToc6" [style.background-color]="colorPallet[5]" matTooltip="{{res.toc6}}" *ngIf="res.toc6!='Toc 6'">{{(res.toc6.length>14)? (res.toc6 | slice:0:12)+'..':(res.toc6)}}</mat-chip>
+            <mat-menu #MatToc6="matMenu">
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,'','')">Go To Chapter</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc6,'')">Go To Term</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc6,'6')">Go To Toc</button>
+            </mat-menu>
+            <mat-chip [matMenuTriggerFor]="MatToc7" [style.background-color]="colorPallet[6]" matTooltip="{{res.toc7}}" *ngIf="res.toc7!='Toc 7'">{{(res.toc7.length>14)? (res.toc7 | slice:0:12)+'..':(res.toc7)}}</mat-chip>
+            <mat-menu #MatToc7="matMenu">
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,'','')">Go To Chapter</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc7,'')">Go To Term</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc7,'7')">Go To Toc</button>
+            </mat-menu>
+            <mat-chip [matMenuTriggerFor]="MatToc8" [style.background-color]="colorPallet[7]" matTooltip="{{res.toc8}}" *ngIf="res.toc8!='Toc 8'">{{(res.toc8.length>14)? (res.toc8 | slice:0:12)+'..':(res.toc8)}}</mat-chip>
+            <mat-menu #MatToc8="matMenu">
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,'','')">Go To Chapter</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc8,'')">Go To Term</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc8,'8')">Go To Toc</button>
+            </mat-menu>
+            <mat-chip [matMenuTriggerFor]="MatToc9" [style.background-color]="colorPallet[8]" matTooltip="{{res.toc9}}" *ngIf="res.toc9!='Toc 9'">{{(res.toc9.length>14)? (res.toc9 | slice:0:12)+'..':(res.toc9)}}</mat-chip>
+            <mat-menu #MatToc9="matMenu">
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,'','')">Go To Chapter</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc9,'')">Go To Term</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc9,'9')">Go To Toc</button>
+            </mat-menu>
+            <mat-chip [matMenuTriggerFor]="MatToc10" [style.background-color]="colorPallet[9]" matTooltip="{{res.toc10}}" *ngIf="res.toc10!='Toc 10'">{{(res.toc10.length>14)? (res.toc10 | slice:0:12)+'..':(res.toc10)}}</mat-chip>
+            <mat-menu #MatToc10="matMenu">
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,'','')">Go To Chapter</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc10,'')">Go To Term</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc10,'10')">Go To Toc</button>
+            </mat-menu>
+            <mat-chip [matMenuTriggerFor]="MatToc11" [style.background-color]="colorPallet[10]" matTooltip="{{res.toc11}}" *ngIf="res.toc11!='Toc 11'">{{(res.toc11.length>14)? (res.toc11 | slice:0:12)+'..':(res.toc11)}}</mat-chip>
+            <mat-menu #MatToc11="matMenu">
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,'','')">Go To Chapter</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc11,'')">Go To Term</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc11,'11')">Go To Toc</button>
+
+            </mat-menu>
+            <mat-chip [matMenuTriggerFor]="MatToc12" [style.background-color]="colorPallet[11]" matTooltip="{{res.toc12}}" *ngIf="res.toc12!='Toc 12'">{{(res.toc12.length>14)? (res.toc12 | slice:0:12)+'..':(res.toc12)}}</mat-chip>
+            <mat-menu #MatToc12="matMenu">
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,'','')">Go To Chapter</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc12,'')">Go To Term</button>
+              <button mat-menu-item (click)="setTermStorage(res.filename,res.chaptername,res.toc12,'12')">Go To Toc</button>
+            </mat-menu>
+            </mat-chip-list>
+
+          </mat-card-actions>
+          
+        </mat-card>
+        
+
+      </div>
+    </div>
+    </div>
+    </div>
+      </div> 
+    </mat-tab>
+
+
+
+    <mat-tab label="Bottom up"  style="height: 850px;width: 100%;overflow: auto;">
+          
+      <div class="example-large-box mat-elevation-z4" style="width: 90%;height:820px">
+        <form class="example-form">
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Enter Search term</mat-label>
+            <input matInput placeholder="Crime" [(ngModel)]="activeSearchTermRef" name="searchRef">
+          </mat-form-field>
+          
+            <button mat-raised-button color="primary" style="margin-left: 10%;" (click)="buildRefTreeforWord(activeSearchTermRef)">Search</button>
+            
+        </form>
+
+        <div class="titleHeader">
+          Available Files
+
+        </div>
+    <div style="width:100%">
+    
+    
+
+    
+    <div style="width: 100%;float: right;">
+      <div style="width: 100%;float:left">
+        Results for Search : {{activeSearchTermRef}}
+
+      </div>
+      
+    <div style="width: 100%;float:left">
+      <div style="width:35%;float: right;">
+      <mat-paginator [length]="dataForSearchResultRef.length"
+      [pageSize]="10"
+      [pageSizeOptions]="[5, 10, 25, 100]"
+      aria-label="Select page" (page)="pageEvent = $event; onPageChangeRef($event)">
+</mat-paginator>
+</div>
+<div style="width:6%;float: right;">
+  <mat-form-field style="margin-left: 1%;">
+
+    <mat-label>Filter Chapters</mat-label>
+    <mat-select (selectionChange)="onRefSelection($event, chapterrefFilter.selectedOptions)">
+      <mat-option *ngFor="let toppingref of chapterrefFilter" [value]="toppingref">{{toppingref}}</mat-option>
+    </mat-select>
+    </mat-form-field>
+
+</div>
+    </div>
+      <div style="width: 100%;margin-top: 3%; overflow-y: auto;height: 600px;">
+      
+        <div *ngFor="let sresult of searchResultRef" style="width: 97%;margin-bottom: 5px;">
+
+
+        <mat-card style="width: 100%;">
+          <!-- <mat-card-subtitle>{{sresult.rfc}}</mat-card-subtitle> -->
+          <div style="background-color: #E4ECFC;border-radius: 7px;padding: 1%;">
+          <mat-card-title>{{sresult.reference}}</mat-card-title>
+       
+          <mat-card-content>
+            
+            <p>{{ sresult.context }}</p>
+
+          </mat-card-content>
+        </div>
+          <mat-divider style="margin-top: 5px;" ></mat-divider>
+          <mat-card-actions style="margin-top:5px ;">
+
+            <mat-chip-list #chipList class="matchiptwo">
+              <mat-chip matTooltip="{{sresult.filename}}" (click)="setRefStorage(sresult.filename,'','')" style="background-color: cornflowerblue;" selected>{{(sresult.filename.length>14)? (sresult.filename | slice:0:12)+'..':(sresult.filename)}}</mat-chip>
+              <mat-chip matTooltip="{{sresult.chaptername}}" selected color="primary" (click)="setRefStorage(sresult.filename,sresult.chaptername,'')" >{{(sresult.chaptername.length>14)? (sresult.chaptername | slice:0:12)+'..':(sresult.chaptername)}}</mat-chip>
+              <mat-chip matTooltip="{{sresult.toc1}}" [style.background-color]="colorPallet[0]" (click)="setRefStorage(sresult.filename,sresult.chaptername,sresult.toc1)" *ngIf="sresult.toc1!='Toc 1'">{{(sresult.toc1.length>14)? (sresult.toc1 | slice:0:12)+'..':(sresult.toc1)}}</mat-chip>
+            
+            <mat-chip matTooltip="{{sresult.toc2}}" [style.background-color]="colorPallet[1]" (click)="setRefStorage(sresult.filename,sresult.chaptername,sresult.toc2)"  *ngIf="sresult.toc2!='Toc 2'">{{(sresult.toc2.length>14)? (sresult.toc2 | slice:0:12)+'..':(sresult.toc2)}}</mat-chip>
+            
+            <mat-chip matTooltip="{{sresult.toc3}}" [style.background-color]="colorPallet[2]" (click)="setRefStorage(sresult.filename,sresult.chaptername,sresult.toc3)" *ngIf="sresult.toc3!='Toc 3'">{{(sresult.toc3.length>14)? (sresult.toc3 | slice:0:12)+'..':(sresult.toc3)}}</mat-chip>
+            
+            <mat-chip matTooltip="{{sresult.toc4}}" [style.background-color]="colorPallet[3]" (click)="setRefStorage(sresult.filename,sresult.chaptername,sresult.toc4)" *ngIf="sresult.toc4!='Toc 4'">{{(sresult.toc4.length>14)? (sresult.toc4 | slice:0:12)+'..':(sresult.toc4)}}</mat-chip>
+            
+            <mat-chip matTooltip="{{sresult.toc5}}" [style.background-color]="colorPallet[4]" (click)="setRefStorage(sresult.filename,sresult.chaptername,sresult.toc5)" *ngIf="sresult.toc5!='Toc 5'">{{(sresult.toc5.length>14)? (sresult.toc5 | slice:0:12)+'..':(sresult.toc5)}}</mat-chip>
+            
+            <mat-chip matTooltip="{{sresult.toc6}}" [style.background-color]="colorPallet[5]" (click)="setRefStorage(sresult.filename,sresult.chaptername,sresult.toc6)" *ngIf="sresult.toc6!='Toc 6'">{{(sresult.toc6.length>14)? (sresult.toc6 | slice:0:12)+'..':(sresult.toc6)}}</mat-chip>
+            
+            <mat-chip matTooltip="{{sresult.toc7}}" [style.background-color]="colorPallet[6]" (click)="setRefStorage(sresult.filename,sresult.chaptername,sresult.toc7)" *ngIf="sresult.toc7!='Toc 7'">{{(sresult.toc7.length>14)? (sresult.toc7 | slice:0:12)+'..':(sresult.toc7)}}</mat-chip>
+            
+            <mat-chip matTooltip="{{sresult.toc8}}" [style.background-color]="colorPallet[7]" (click)="setRefStorage(sresult.filename,sresult.chaptername,sresult.toc8)" *ngIf="sresult.toc8!='Toc 8'">{{(sresult.toc8.length>14)? (sresult.toc8 | slice:0:12)+'..':(sresult.toc8)}}</mat-chip>
+            
+            <mat-chip matTooltip="{{sresult.toc9}}" [style.background-color]="colorPallet[8]" (click)="setRefStorage(sresult.filename,sresult.chaptername,sresult.toc9)" *ngIf="sresult.toc9!='Toc 9'">{{(sresult.toc9.length>14)? (sresult.toc9 | slice:0:12)+'..':(sresult.toc9)}}</mat-chip>
+            
+            <mat-chip matTooltip="{{sresult.toc10}}" [style.background-color]="colorPallet[9]" (click)="setRefStorage(sresult.filename,sresult.chaptername,sresult.toc10)" *ngIf="sresult.toc10!='Toc 10'">{{(sresult.toc10.length>14)? (sresult.toc10 | slice:0:12)+'..':(sresult.toc10)}}</mat-chip>
+            
+            <mat-chip matTooltip="{{sresult.toc11}}" [style.background-color]="colorPallet[10]" (click)="setRefStorage(sresult.filename,sresult.chaptername,sresult.toc11)" *ngIf="sresult.toc11!='Toc 11'">{{(sresult.toc11.length>14)? (sresult.toc11 | slice:0:12)+'..':(sresult.toc11)}}</mat-chip>
+            
+            <mat-chip matTooltip="{{sresult.toc12}}" [style.background-color]="colorPallet[11]" (click)="setRefStorage(sresult.filename,sresult.chaptername,sresult.toc12)" *ngIf="sresult.toc12!='Toc 12'">{{(sresult.toc12.length>14)? (sresult.toc12 | slice:0:12)+'..':(sresult.toc12)}}</mat-chip>
+
+            </mat-chip-list>
+
+          </mat-card-actions>
+          
+        </mat-card>
+
+      </div>
+    </div>
+    </div>
+    </div>
+      </div> 
+    </mat-tab>
+    </mat-tab-group>
+  </mat-grid-tile>
+</mat-grid-list>
+
+
+
+
+
+
+

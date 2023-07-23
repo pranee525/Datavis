@@ -3,7 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+ dbUrl:'http://192.168.0.160:2480/command/LeagalTex_Schema1/sql'
+//dbUrl:" http://10.40.20.39:2480/command/LeagalTex_Schema1/sql"
 };
 
 /*

@@ -1,0 +1,183 @@
+<!-- 
+
+<div>
+  Showing results from  <b>{{fileName}}</b> for Chapters <b>{{chapName}}</b>
+
+</div>
+
+<div style="width: 100%;overflow-x: auto !important;display: -webkit-box;" *ngIf="currentMainDiv>1" >
+
+    <div class="topDiv" *ngFor="let item of cardsList">
+
+        <div *ngFor="let val of item|keyvalue">
+        
+
+            <span class="lineSpan" >
+                {{val.key}}
+             </span> 
+            </div>
+
+
+    </div>
+    
+    
+    
+ 
+
+
+</div>
+
+<div style="width:100%;margin-bottom: 15%;margin-top: 3%;">
+<div class="mainDiv">
+   <div  *ngFor="let item of mainDiv|keyvalue" class="lineSpan">
+       
+    
+    <span   class="spanBreak" >{{item.key}}  </span>
+
+
+    <button  color="primary" (click)="showSelection(item.key,currentMainDiv)" style="float: right;" title="Select"> Filter</button>
+    
+    <button color="primary" (click)="gotoNextLevel(item.key,currentMainDiv)" style="float: right;margin-right: 5px;" title="Next Level">Next</button>
+    
+    <button color="primary" (click)="gotoPreviousLevel(item.key,currentMainDiv)" style="float: right;margin-right: 5px;" title="Next Level">Prev </button>
+
+</div>
+        
+    
+    
+    
+  
+
+
+</div>
+<div class="mainDiv">
+    <div *ngFor="let item of objectKeys(filterSelection)">
+        
+
+    <div class="lineSpan" *ngFor="let kval of filterSelection[item]">
+     <b> {{kval.rfc}} - {{kval.rel}}  </b>  {{kval.reference}} ({{kval.reference_start}} - {{kval.reference_end}})
+     <span (click)="enableSpan(kval)" class="moreButton">More..</span>
+
+     <div *ngIf="kval.expand">
+       <i>{{kval.context}}</i>
+     </div>
+   
+
+    </div> 
+     
+    </div>
+
+</div>
+
+
+
+</div> -->
+
+
+<div style="width:100%">
+  <mat-chip matTooltip="{{fileName}}" selected style="background-color:cornflowerblue" (click)="setTermStorage(fileName)"> {{(fileName.length>14)? (fileName | slice:0:12)+'..':(fileName)}}</mat-chip>
+
+</div>
+
+
+<div style="width:100%">
+
+
+</div>
+<div style="width: 100%;overflow-x: auto !important;display: -webkit-box;height: 260px;" *ngIf="currentMainDiv>1" >
+
+  <div class="topDiv" *ngFor="let item of cardsList; let i = index" [style.background-color]="colorPallet[i]">
+      <div style="width:100%;border-bottom:1px dotted grey;padding: 10px;">
+        <b>{{keyList[i]}}</b>
+      </div>
+      <div *ngFor="let val of item|keyvalue">
+      
+        <span class="lineSpan" *ngIf="keyList[i]==val.key" style="background-color: rgb(115, 188, 224);" >
+          {{val.key}}
+       </span> 
+       
+      <span class="lineSpan" *ngIf="keyList[i]!=val.key">
+        {{val.key}}
+     </span> 
+          </div>
+
+
+  </div>
+  
+  
+  
+
+
+
+</div>
+
+<div style="width:100%;margin-bottom: 15%;margin-top: 3%;">
+<div class="card" [style.background-color]="colorPallet[currentMainDiv-1]">
+<div class="mainCard">
+Toc {{currentMainDiv}}
+</div>
+<div class="container" style="height:300px;overflow: auto;">
+ <div  *ngFor="let item of mainDiv|keyvalue" class="lineSpan" >
+     
+  
+  <span   class="spanBreak" >{{item.key}}  </span>
+
+
+  <button  color="primary" (click)="showSelection(item.key,currentMainDiv)" style="float: right;" title="Shows references of this selection only"> Preview</button>
+  
+  <button color="primary" (click)="gotoNextLevel(item.key,currentMainDiv)" style="float: right;margin-right: 5px;" title="Next Level">Next</button>
+  
+  <button color="primary" (click)="gotoPreviousLevel(item.key,currentMainDiv)" style="float: right;margin-right: 5px;" title="Previous Level">Prev </button>
+
+</div>
+</div>   
+  
+  
+  
+
+
+
+</div>
+<div class="card" style="background-color: #E4ECFC;">
+<div class="mainCard">
+  References<br/>
+  <i><p style="font-weight: 200;font-size: small;">use Ctrl+F to search for a specific reference </p></i>
+  </div>
+<div class="container" style="height:300px;overflow: auto;">
+
+  <div *ngFor="let item of objectKeys(filterSelection)">
+      
+
+  <div class="lineSpan" *ngFor="let kval of filterSelection[item]">
+   <b> {{kval.rfc}} - {{kval.rel}}  </b>  {{kval.reference}} 
+   <span (click)="enableSpan(kval)" class="moreButton">More..</span>
+
+   <div *ngIf="kval.expand">
+     <i>{{kval.context}}</i>
+   </div>
+ <!-- <mat-accordion>
+
+   <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+         <b> {{kval.rfc}} - {{kval.rel}}  </b>  
+        </mat-panel-title>
+        <mat-panel-description>
+          {{kval.reference}} ({{kval.reference_start}} - {{kval.reference_end}})
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <p>{{kval.context}}</p>
+    </mat-expansion-panel>
+  </mat-accordion> -->
+
+  </div> 
+   
+  </div>
+
+</div>
+
+</div>
+
+
+
+</div>
